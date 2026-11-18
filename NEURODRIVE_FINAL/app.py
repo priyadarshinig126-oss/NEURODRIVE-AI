@@ -357,15 +357,39 @@ if mode == "Live Camera":
         focal,
     )
 
+    # Metered TURN credentials are stored in Streamlit Cloud Secrets.
+    # Never hard-code TURN usernames or passwords in this file or GitHub.
+    metered_username = st.secrets.get("METERED_USERNAME", "")
+    metered_credential = st.secrets.get("METERED_CREDENTIAL", "")
+
+    if not metered_username or not metered_credential:
+        st.error(
+            "TURN credentials are missing. Add METERED_USERNAME and "
+            "METERED_CREDENTIAL in Streamlit Cloud → Manage app → Settings → Secrets."
+        )
+        st.stop()
+
+    rtc_config = {
+        "iceServers": [
+            {"urls": ["stun:stun.relay.metered.ca:80"]},
+            {
+                "urls": [
+                    "turn:global.relay.metered.ca:80",
+                    "turn:global.relay.metered.ca:80?transport=tcp",
+                    "turn:global.relay.metered.ca:443",
+                    "turns:global.relay.metered.ca:443?transport=tcp",
+                ],
+                "username": metered_username,
+                "credential": metered_credential,
+            },
+        ]
+    }
+
     ctx = webrtc_streamer(
         key="neurodrive-live-camera",
         video_processor_factory=processor_factory,
         media_stream_constraints={"video": True, "audio": False},
-        rtc_configuration={
-            "iceServers": [
-                {"urls": ["stun:stun.l.google.com:19302"]}
-            ]
-        },
+        rtc_configuration=rtc_config,
         async_processing=True,
     )
 
