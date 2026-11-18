@@ -1,7 +1,7 @@
 streamlit<2,>=1.51
 streamlit-webrtc>=0.63.0
 ultralytics<9,>=8.3
-opencv-python<5,>=4.10
+opencv-python-headless==4.11.0.86
 mediapipe==0.10.21
 numpy<2,>=1.26
 pandas<3,>=2.2
