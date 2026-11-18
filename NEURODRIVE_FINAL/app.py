@@ -10,7 +10,6 @@ import numpy as np
 import streamlit as st
 import streamlit.components.v1 as components
 from streamlit_webrtc import VideoProcessorBase, webrtc_streamer
-from aiortc import RTCConfiguration
 
 from config.settings import APP_TITLE, DEFAULT_MODEL
 from models.object_detector import ObjectDetector
@@ -358,17 +357,15 @@ if mode == "Live Camera":
         focal,
     )
 
-    rtc_config = RTCConfiguration({
-        "iceServers": [
-            {"urls": ["stun:stun.l.google.com:19302"]}
-        ]
-    })
-
     ctx = webrtc_streamer(
         key="neurodrive-live-camera",
         video_processor_factory=processor_factory,
         media_stream_constraints={"video": True, "audio": False},
-        rtc_configuration=rtc_config,
+        rtc_configuration={
+            "iceServers": [
+                {"urls": ["stun:stun.l.google.com:19302"]}
+            ]
+        },
         async_processing=True,
     )
 
